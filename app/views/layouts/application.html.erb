@@ -1,14 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="usersApp">
 <head>
   <title>NoogaJsAngularDemo</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
-<body>
+<body ng-controller="UsersCtrl">
+  <h1>Users</h1>
+  <input type="text" ng-model="searchField">
+  <ul>
+    <li ng-repeat="user in users | filter:searchField">
+      <h1>{{ user.name }}</h1>
+    </li>
+  </ul>
 
-<%= yield %>
+  <script>
+    var app = angular.module('usersApp', []);
 
+    app.controller('UsersCtrl', function($scope, User) {
+      User.getUsers().success(function(data){
+        $scope.users = data
+      });
+    });
+
+    app.factory('User', function($http) {
+      var factory = {};
+
+      factory.getUsers = function() {
+        return $http.get('/users');
+      }
+
+      return factory;
+    });
+  </script>
 </body>
 </html>
